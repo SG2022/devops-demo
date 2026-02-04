@@ -30,6 +30,6 @@ public class DemoControllerTest {
                 // Verify response status is 200 OK
                 .andExpect(status().isOk())
                 // Verify response body matches expected text
-                .andExpect(content().string("Devops-Demo application is running"));
+                .andExpect(content().string("DevOps demo - CI/CD is working!"));
     }
 }
