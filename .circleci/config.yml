@@ -1,9 +1,6 @@
 version: 2.1
 
 jobs:
-  # ==========================================
-  # BUILD JOB - Compile and package
-  # ==========================================
   build:
     docker:
       - image: cimg/openjdk:21.0
@@ -27,9 +24,6 @@ jobs:
           paths:
             - target/*.jar
 
-  # ==========================================
-  # TEST JOB - Run automated tests
-  # ==========================================
   test:
     docker:
       - image: cimg/openjdk:21.0
@@ -49,9 +43,6 @@ jobs:
       - store_artifacts:
           path: target/surefire-reports
 
-  # ==========================================
-  # PUBLISH JOB - Build and push Docker image
-  # ==========================================
   publish:
     docker:
       - image: cimg/base:stable
@@ -60,7 +51,6 @@ jobs:
       - attach_workspace:
           at: .
       - setup_remote_docker
-          
       - run:
           name: Build Docker image
           command: |
@@ -74,11 +64,35 @@ jobs:
             echo "Pushing image to Docker Hub..."
             docker push $DOCKER_USERNAME/devops-demo:latest
 
-# ==========================================
-# WORKFLOW - Run jobs in sequence
-# ==========================================
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run:
+          name: Install Railway CLI
+          command: |
+            echo "Installing Railway CLI..."
+            curl -fsSL https://railway.app/install.sh | sh
+            export PATH="/root/.railway/bin:$PATH"
+            railway --version
+      - run:
+          name: Trigger Railway Deployment
+          command: |
+            export PATH="/root/.railway/bin:$PATH"
+            echo "Logging in to Railway..."
+            railway login --browserless
+            
+            echo "Linking to Railway project..."
+            railway link $RAILWAY_PROJECT_ID
+            
+            echo "Triggering deployment..."
+            railway up --service $RAILWAY_SERVICE_ID
+            
+            echo "Deployment triggered successfully!"
+            echo "Railway is now pulling latest code and redeploying."
+
 workflows:
-  build_test_publish:
+  build_test_publish_deploy:
     jobs:
       - build
       - test:
@@ -87,3 +101,6 @@ workflows:
       - publish:
           requires:
             - test
+      - deploy:
+          requires:
+            - publish
