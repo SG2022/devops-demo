@@ -21,7 +21,7 @@ public class DemoControllerTest {
 
     /**
      * Test that the /hello endpoint returns status 200 OK
-     * and the correct message
+     * and the correct message!!
      */
     @Test
     public void testHelloEndpoint() throws Exception {
