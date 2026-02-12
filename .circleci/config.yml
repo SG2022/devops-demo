@@ -65,15 +65,15 @@ jobs:
             docker push $DOCKER_USERNAME/devops-demo:latest
 
   deploy:
-  docker:
-    - image: cimg/node:18.20
-  steps:
-    - checkout
-    - run:
-        name: Deploy to Railway
-        command: |
-          echo "Deploying to Railway..."
-          npx @railway/cli up --service=$RAILWAY_SERVICE_ID --ci
+    docker:
+      - image: cimg/node:18.20
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Railway
+          command: |
+            echo "Deploying to Railway..."
+            npx @railway/cli up --service=$RAILWAY_SERVICE_ID --ci
 
 workflows:
   build_test_publish_deploy:
@@ -87,4 +87,4 @@ workflows:
             - test
       - deploy:
           requires:
-            - publishs
+            - publish
