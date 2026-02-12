@@ -65,27 +65,27 @@ jobs:
             docker push $DOCKER_USERNAME/devops-demo:latest
 
   deploy:
-  docker:
-    - image: cimg/base:stable
-  steps:
-    - run:
-        name: Trigger Railway Deployment via API
-        command: |
-          echo "Triggering Railway deployment via GraphQL API..."
-          
-          response=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
-            -H "Authorization: Bearer $RAILWAY_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"query\":\"mutation { serviceInstanceRedeploy(serviceId: \\\"$RAILWAY_SERVICE_ID\\\", environmentId: \\\"6751a760-dd27-448e-bec3-d52b932ab362\\\") }\"}")
-          
-          echo "Response: $response"
-          
-          if echo "$response" | grep -q "error"; then
-            echo "Deployment trigger failed!"
-            exit 1
-          else
-            echo "Deployment triggered successfully!"
-          fi
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run:
+          name: Trigger Railway Deployment via API
+          command: |
+            echo "Triggering Railway deployment via GraphQL API..."
+            
+            response=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
+              -H "Authorization: Bearer $RAILWAY_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"query\":\"mutation { serviceInstanceRedeploy(serviceId: \\\"$RAILWAY_SERVICE_ID\\\", environmentId: \\\"6751a760-dd27-448e-bec3-d52b932ab362\\\") }\"}")
+            
+            echo "Response: $response"
+            
+            if echo "$response" | grep -q "error"; then
+              echo "Deployment trigger failed!"
+              exit 1
+            else
+              echo "Deployment triggered successfully!"
+            fi
 
 workflows:
   build_test_publish_deploy:
