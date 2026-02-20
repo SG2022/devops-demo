@@ -59,7 +59,10 @@ jobs:
           name: Run Dependency Check
           command: |
             echo "Running security scan..."
-            mvn org.owasp:dependency-check-maven:check
+            mvn org.owasp:dependency-check-maven:check \
+              -DretryCount=3 \
+              -DcveValidForHours=24
+          no_output_timeout: 20m
       - store_artifacts:
           path: target/dependency-check-report.html
           destination: security-report
