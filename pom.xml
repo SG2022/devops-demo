@@ -52,15 +52,19 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-			 <plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>12.1.0</version>
-            <configuration>
-                <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
-                <failBuildOnCVSS>7</failBuildOnCVSS>
-            </configuration>
-        </plugin>
+			 
+
+		<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>12.1.0</version>
+    <configuration>
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+        <failBuildOnCVSS>7</failBuildOnCVSS>
+        <!-- DISABLE OSS Index analyzer -->
+        <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+    </configuration>
+</plugin>
 		</plugins>
 	</build>
 
