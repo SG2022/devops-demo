@@ -1,6 +1,7 @@
 version: 2.1
 
 jobs:
+  # Build job (unchanged)
   build:
     docker:
       - image: cimg/openjdk:21.0
@@ -24,6 +25,7 @@ jobs:
           paths:
             - target/*.jar
 
+  # Test job (unchanged)
   test:
     docker:
       - image: cimg/openjdk:21.0
@@ -43,6 +45,28 @@ jobs:
       - store_artifacts:
           path: target/surefire-reports
 
+  # NEW: Security scan job
+  security_scan:
+    docker:
+      - image: cimg/openjdk:21.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - maven-deps-{{ checksum "pom.xml" }}
+            - maven-deps-
+      - run:
+          name: Run Dependency Check
+          command: |
+            echo "Running security scan..."
+            mvn org.owasp:dependency-check-maven:check
+      - store_artifacts:
+          path: target/dependency-check-report.html
+          destination: security-report
+      - store_test_results:
+          path: target/dependency-check-report.xml
+
+  # Publish job (unchanged)
   publish:
     docker:
       - image: cimg/base:stable
@@ -64,6 +88,7 @@ jobs:
             echo "Pushing image to Docker Hub..."
             docker push $DOCKER_USERNAME/devops-demo:latest
 
+  # Deploy job (unchanged)
   deploy:
     docker:
       - image: cimg/node:18.20
@@ -75,6 +100,7 @@ jobs:
             echo "Deploying to Railway..."
             npx @railway/cli up --service=$RAILWAY_SERVICE_ID --ci
 
+# Updated workflow with security scan
 workflows:
   build_test_publish_deploy:
     jobs:
@@ -82,9 +108,12 @@ workflows:
       - test:
           requires:
             - build
-      - publish:
+      - security_scan:
           requires:
             - test
+      - publish:
+          requires:
+            - security_scan
       - deploy:
           requires:
             - publish
