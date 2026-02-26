@@ -40,7 +40,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- PostgreSQL Driver -->
+		<dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.0</version>  <!-- OLD VULNERABLE VERSION! -->
+    </dependency>
       
 	</dependencies>
 
